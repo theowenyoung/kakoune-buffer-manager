@@ -20,6 +20,7 @@ plug 'theowenyoung/kakoune-buffer-manager' config %{
 
 ## Features
 
+- Show Buffer Status(Modified, Current)
 - Switch buffer
 - Delete buffer
 - Delete multiple Buffer
