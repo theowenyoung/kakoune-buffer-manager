@@ -2,6 +2,9 @@
 
 ![screen shot](./assets/kakoune-buffer-manager.gif)
 
+
+> I'm new to kakoune, and this is my first kakoune plugin, I have't done much testing, If you are willing to try it, welcome! I'll delete this when I've used it myself many times.
+
 ## Installations
 
 Add `rc/buffer-manager.kak` to your autoload dir: `~/.config/kak/autoload/`
