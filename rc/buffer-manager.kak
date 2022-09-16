@@ -65,7 +65,7 @@ define-command -hidden -override buffer-manager-render-buflist %{
     map -docstring "delete all buffers" buffer normal <q> ': evaluate-commands -buffer * %{ delete-buffer }<ret>'
     map -docstring "force delete all buffers" buffer normal <Q> ': evaluate-commands -buffer * %{ delete-buffer! }<ret>'
     map -docstring "delete other buffers except current line or selected lines" buffer normal <e> ': buffer-manager-delete-others<ret>'
-    map -docstring "force delete other buffers except current line or selected lines" buffer normal <E> ': echo buffer-manager-delete-others-force<ret>'
+    map -docstring "force delete other buffers except current line or selected lines" buffer normal <E> ': buffer-manager-delete-others-force<ret>'
     map -docstring "toggle help info" buffer normal <?> ': buffer-manager-help<ret>'
     buffer-manager-help
 }
@@ -148,7 +148,7 @@ define-command -override -hidden  buffer-manager-select %{
         printf "exec H\n"
     }
 }
-    define-command -override -hidden  buffer-manager-select-others %{
+define-command -override -hidden  buffer-manager-select-others %{
     eval %sh{
         lines=()
         for val in "$kak_selections_desc";
@@ -172,14 +172,19 @@ define-command -override -hidden  buffer-manager-select %{
                         lines+=($line)
                     done
         done
-        printf "select "
+        selected_lines=""
+
         for line in $(seq 1 $kak_buf_line_count); do
             if [[ ! " ${lines[*]} " =~ " ${line} " ]]; then
-                printf "%s.4,%s.9999 " $line $line
+                selected_lines+="$line.4,$line.9999 "
             fi
         done
-        printf "\n"
-        printf "exec H\n"
+        if [ -z "$selected_lines"]; then
+            printf 'fail "There are no buffers left"\n'
+        else
+            printf "select %s\n" $selected_lines
+            printf "exec H\n"
+        fi
     }
 }
 define-command -hidden -override buffer-manager-delete %{
@@ -187,6 +192,18 @@ define-command -hidden -override buffer-manager-delete %{
     eval -itersel %{
        try %{
            delete-buffer "%val{selection}"
+           exec "xd"
+       } catch %{
+           fail %val{error}
+       }
+    }
+    buffer-manager-close-list-when-empty
+}
+define-command -hidden -override buffer-manager-delete-force %{
+    buffer-manager-select
+    eval -itersel %{
+       try %{
+           delete-buffer! "%val{selection}"
            exec "xd"
        } catch %{
            fail %val{error}
@@ -207,18 +224,6 @@ define-command -hidden -override buffer-manager-delete-others %{
     buffer-manager-close-list-when-empty
 }
 define-command -override -hidden buffer-manager-delete-others-force %{
-    buffer-manager-select
-    eval -itersel %{
-       try %{
-           delete-buffer! "%val{selection}"
-           exec "xd"
-       } catch %{
-           fail %val{error}
-       }
-    }
-    buffer-manager-close-list-when-empty
-}
-define-command -hidden -override buffer-manager-delete-force %{
     buffer-manager-select-others
     eval -itersel %{
        try %{
