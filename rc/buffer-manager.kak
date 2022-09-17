@@ -51,7 +51,7 @@ define-command -hidden -override buffer-manager-render-buflist %{
     }
     try %{
         # select current one
-        exec "<a-k>%opt{buffer_manager_latest_bufname}<ret>gl"
+        exec "<a-k>^[> ][+ ] %opt{buffer_manager_latest_bufname}$<ret>gl"
     } catch %{
         exec gggl
     }
