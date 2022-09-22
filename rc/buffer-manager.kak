@@ -119,7 +119,7 @@ define-command -hidden -override buffer-manager-open %{
 define-command -override -hidden  buffer-manager-select %{
     eval %sh{
         lines=();
-        for val in "$kak_selections_desc";
+        for val in $kak_selections_desc;
             do
                 left_field=$(echo $val | cut -f1 -d,)
                 right_field=$(echo $val | cut -f2 -d,)
